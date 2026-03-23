@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "title": "Bienvenue !",
+    "message": "Bienvenue sur la nouvelle plateforme de gestion du Dahira.",
+    "type": "system",
+    "read": false,
+    "date": "2026-03-20T08:00:00Z",
+    "userId": "2"
+  },
+  {
+    "id": "2",
+    "title": "Nouvelle Réunion",
+    "message": "Une nouvelle réunion a été programmée pour le 10 Avril.",
+    "type": "event",
+    "read": false,
+    "date": "2026-03-22T10:30:00Z",
+    "userId": "2"
+  }
+]
