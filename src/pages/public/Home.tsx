@@ -26,7 +26,7 @@ const Home = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 to-emerald-900/40 z-10"></div>
           <img 
-            src="src/public/assets/niass5.jpeg" 
+            src="public/assets/niass5.jpeg" 
             className="w-full h-full object-cover"
             alt="Spiritual background"
           />
@@ -69,11 +69,11 @@ const Home = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-emerald-500 rounded-full blur-[100px] opacity-20 animate-pulse"></div>
                 <img 
-                  src="src/public/assets/niass5.jpeg" 
+                  src="public/assets/niass5.jpeg" 
                   alt="Ansaroudine Logo"
                   className="w-[450px] h-[450px] object-contain relative z-10 drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)]"
                   onError={(e) => {
-                    e.currentTarget.src = "src/public/assets/niass5.jpeg";
+                    e.currentTarget.src = "public/assets/niass5.jpeg";
                   }}
                 />
               </div>
@@ -141,7 +141,7 @@ const Home = () => {
             >
               <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-50"></div>
               <img 
-                src="src/public/assets/niass3.jpeg" 
+                src="public/assets/niass3.jpeg" 
                 alt="Tidjanisme"
                 className="rounded-[60px] shadow-2xl relative z-10"
               />
