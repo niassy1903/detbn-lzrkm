@@ -1,18 +1,13 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 export enum UserRole {
-  ADMIN = 'admin',
-  MEMBER = 'member',
-  GUEST = 'guest'
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+  GUEST = 'GUEST'
 }
 
 export enum EventStatus {
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED'
 }
 
 export enum NotificationType {

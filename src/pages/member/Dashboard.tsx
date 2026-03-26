@@ -1,119 +1,134 @@
+import React from 'react';
 import { motion } from 'motion/react';
+import { 
+  Users, 
+  Calendar, 
+  Bell, 
+  FileText, 
+  TrendingUp,
+  ArrowUpRight,
+  Clock
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar, Bell, MessageSquare, ArrowRight } from 'lucide-react';
+import { useData } from '../../context/DataContext';
+import { Link } from 'react-router-dom';
 
-export default function MemberDashboard() {
+const MemberDashboard = () => {
   const { user } = useAuth();
+  const { events, news } = useData();
+
+  const stats = [
+    { label: 'Participation', value: '85%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'Événements', value: events.length.toString(), icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Documents', value: '24', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: 'Messages', value: '5', icon: Bell, color: 'text-purple-600', bg: 'bg-purple-50' },
+  ];
+
+  const upcomingEvents = events
+    .filter(e => e.status === 'UPCOMING' || e.status === 'ONGOING')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3);
+
+  const recentNews = news.slice(0, 3);
 
   return (
-    <div className="space-y-12">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-        <div>
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-4"
-          >
-            Tableau de bord
-          </motion.div>
-          <h1 className="text-6xl font-black text-neutral-900 tracking-tighter leading-none">Bonjour, <span className="text-gradient">{user?.name}</span> 👋</h1>
-          <p className="text-2xl text-neutral-500 mt-4 font-medium">Voici ce qui se passe dans votre Dahira aujourd'hui.</p>
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center space-x-6 text-center md:text-left">
+          <div className="relative">
+            <img src={user?.avatar} alt={user?.name} className="w-20 h-20 rounded-full border-4 border-emerald-50 shadow-lg object-cover" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-gray-900">Assalamou Alaykoum, {user?.name.split(' ')[0]} !</h2>
+            <p className="text-gray-500 font-medium">Heureux de vous revoir dans votre espace Dahira.</p>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <button className="btn-primary !px-10 !py-5 !text-lg shadow-2xl shadow-primary/20 group">
-            Participer à un événement
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
+        <div className="flex items-center space-x-3 bg-emerald-50 px-6 py-3 rounded-2xl">
+          <Clock className="w-5 h-5 text-emerald-600" />
+          <span className="text-emerald-700 font-bold">Dernière activité : Aujourd'hui</span>
         </div>
-      </header>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
-        {[
-          { icon: Calendar, label: 'Prochain événement', value: '10 Avril 2026', color: 'bg-primary/10 text-primary', trend: '+2 jours' },
-          { icon: Bell, label: 'Notifications non lues', value: '2', color: 'bg-secondary/10 text-amber-600', trend: 'Nouveau' },
-          { icon: MessageSquare, label: 'Messages récents', value: '5', color: 'bg-blue-50 text-blue-600', trend: '+1 aujourd\'hui' },
-        ].map((stat, i) => (
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="glass p-10 rounded-[3.5rem] border-white/60 shadow-2xl shadow-primary/5 card-hover group relative overflow-hidden"
+            className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
           >
-            <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-primary/10 transition-colors" />
-            <div className={`w-20 h-20 ${stat.color} rounded-[2rem] flex items-center justify-center mb-10 group-hover:scale-110 transition-transform relative z-10 shadow-xl`}>
-              <stat.icon size={36} />
+            <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
+              <stat.icon className="w-6 h-6" />
             </div>
-            <div className="flex items-center justify-between relative z-10 mb-4">
-              <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em]">{stat.label}</p>
-              <span className="text-[10px] font-black text-primary bg-primary/10 px-3 py-1.5 rounded-full uppercase tracking-widest">{stat.trend}</span>
-            </div>
-            <p className="text-5xl font-black text-neutral-900 tracking-tight relative z-10">{stat.value}</p>
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider">{stat.label}</p>
+            <h3 className="text-3xl font-black text-gray-900 mt-1">{stat.value}</h3>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <section className="bg-white p-12 rounded-[3.5rem] border border-neutral-100 shadow-sm card-hover">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Événements <span className="text-gradient">à venir</span></h2>
-            <button className="p-3 bg-neutral-50 text-primary rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm">
-              <ArrowRight size={20} />
-            </button>
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Upcoming Events */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-black text-gray-900">Prochains Événements</h3>
+            <Link to="/member/events" className="text-emerald-600 font-bold text-sm hover:underline">Voir tout</Link>
           </div>
-          <div className="space-y-8">
-            {[
-              { title: "Grande Réunion Mensuelle", date: "10 Avril, 10:00", type: "Réunion", location: "Siège Social" },
-              { title: "Conférence Religieuse", date: "15 Avril, 15:00", type: "Conférence", location: "Grande Mosquée" }
-            ].map((event, i) => (
-              <div key={i} className="flex items-center justify-between p-8 bg-neutral-50 rounded-[2.5rem] border border-neutral-100 hover:border-primary/20 hover:bg-white hover:shadow-2xl hover:shadow-primary/5 transition-all cursor-pointer group">
-                <div className="flex gap-8 items-center">
-                  <div className="w-20 h-20 bg-white rounded-3xl flex flex-col items-center justify-center border border-neutral-100 shadow-sm group-hover:bg-primary group-hover:text-white transition-all">
-                    <span className="text-xs font-black uppercase tracking-tighter leading-none">{event.date.split(' ')[1]}</span>
-                    <span className="text-2xl font-black leading-none mt-1">{event.date.split(' ')[0]}</span>
+          <div className="space-y-4">
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex items-center justify-between gap-4 group hover:border-emerald-200 transition-all">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0">
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-2">{event.type}</p>
-                    <p className="font-black text-neutral-900 text-xl leading-tight">{event.title}</p>
-                    <p className="text-sm text-neutral-400 font-medium mt-2 flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                      {event.location}
+                    <h4 className="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">{event.title}</h4>
+                    <p className="text-sm text-gray-500 flex items-center space-x-2 mt-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(event.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</span>
                     </p>
                   </div>
                 </div>
-                <button className="w-14 h-14 bg-white border border-neutral-200 rounded-2xl flex items-center justify-center text-neutral-400 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:rotate-[-45deg] transition-all shadow-sm">
-                  <ArrowRight size={24} />
-                </button>
+                <Link to="/member/events" className="p-3 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <ArrowUpRight className="w-5 h-5" />
+                </Link>
               </div>
             ))}
+            {upcomingEvents.length === 0 && (
+              <div className="text-center py-12 bg-gray-50 rounded-[24px] border border-dashed border-gray-200">
+                <p className="text-gray-500 font-medium">Aucun événement à venir pour le moment.</p>
+              </div>
+            )}
           </div>
-        </section>
+        </div>
 
-        <section className="bg-white p-12 rounded-[3.5rem] border border-neutral-100 shadow-sm card-hover">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Dernières <span className="text-gradient">Annonces</span></h2>
-            <button className="p-3 bg-neutral-50 text-primary rounded-2xl hover:bg-primary hover:text-white transition-all shadow-sm">
-              <ArrowRight size={20} />
-            </button>
-          </div>
-          <div className="space-y-10">
-            {[
-              { title: "Mise à jour de la plateforme", date: "Il y a 2 jours", desc: "La nouvelle version de Dahira Manager est en ligne avec de nouvelles fonctionnalités.", category: "Système" },
-              { title: "Cotisations annuelles", date: "Il y a 1 semaine", desc: "Le bureau rappelle que les cotisations sont ouvertes pour l'année 2026.", category: "Bureau" }
-            ].map((news, i) => (
-              <div key={i} className="relative pl-10 border-l-4 border-neutral-100 hover:border-primary transition-all group">
-                <div className="absolute top-0 left-[-8px] w-3.5 h-3.5 bg-primary rounded-full border-4 border-white shadow-sm group-hover:scale-125 transition-transform" />
-                <div className="flex items-center gap-4 mb-3">
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">{news.category}</span>
-                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{news.date}</span>
+        {/* Recent News/Announcements */}
+        <div className="space-y-6">
+          <h3 className="text-xl font-black text-gray-900">Dernières Actualités</h3>
+          <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 space-y-6">
+            {recentNews.map((item, i) => (
+              <div key={item.id} className="flex space-x-4">
+                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${i === 0 ? 'bg-emerald-500' : 'bg-gray-200'}`}></div>
+                <div>
+                  <h5 className="text-sm font-bold text-gray-900 line-clamp-1">{item.title}</h5>
+                  <p className="text-xs text-gray-500 mt-1">{new Date(item.date).toLocaleDateString('fr-FR')}</p>
                 </div>
-                <p className="font-black text-neutral-900 text-xl leading-tight mb-3 group-hover:text-primary transition-colors">{news.title}</p>
-                <p className="text-base text-neutral-500 leading-relaxed font-medium">{news.desc}</p>
               </div>
             ))}
+            {recentNews.length === 0 && (
+              <p className="text-center text-gray-500 text-sm">Aucune actualité récente.</p>
+            )}
+            <Link to="/actualites" className="block w-full py-4 bg-gray-50 text-gray-600 rounded-2xl font-bold text-sm text-center hover:bg-gray-100 transition-all">
+              Toutes les actualités
+            </Link>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default MemberDashboard;

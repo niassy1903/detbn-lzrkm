@@ -1,0 +1,35 @@
+import mongoose from 'mongoose';
+
+const notificationSchema = new mongoose.Schema({
+  recipient: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false // If null, it's a global notification
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  message: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['INFO', 'SUCCESS', 'WARNING', 'ERROR'],
+    default: 'INFO'
+  },
+  isRead: {
+    type: Boolean,
+    default: false
+  },
+  link: {
+    type: String,
+    required: false
+  }
+}, {
+  timestamps: true
+});
+
+const Notification = mongoose.model('Notification', notificationSchema);
+export default Notification;
