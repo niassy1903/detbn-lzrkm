@@ -20,11 +20,11 @@ const PublicLayout = () => {
             <div className="lg:col-span-1">
               <Link to="/" className="flex items-center space-x-3 mb-8 group">
                 <img 
-                  src="public/assets/logo.jpeg" 
+                  src="/assets/logo.jpeg" 
                   alt="Logo" 
                   className="w-12 h-12 object-contain"
                   onError={(e) => {
-                    e.currentTarget.src = "public/assets/logo.jpeg";
+                    e.currentTarget.src = "/assets/logo.jpeg";
                   }}
                 />
                 <div className="flex flex-col">

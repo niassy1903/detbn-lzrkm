@@ -23,7 +23,7 @@ const About = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/80 via-emerald-950/90 to-emerald-950 z-10"></div>
           <img 
-            src="public/assets/niass6.jpeg" 
+            src="/assets/niass6.jpeg" 
             className="w-full h-full object-cover"
             alt="About background"
           />
@@ -72,7 +72,7 @@ const About = () => {
             >
               <div className="absolute inset-0 bg-emerald-500 rounded-[60px] rotate-3 opacity-10"></div>
               <img 
-                src="public/assets/niass6.jpeg" 
+                src="/assets/niass6.jpeg" 
                 alt="Baye Niass Teachings"
                 className="rounded-[60px] shadow-2xl relative z-10 grayscale hover:grayscale-0 transition-all duration-700"
               />

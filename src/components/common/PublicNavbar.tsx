@@ -44,11 +44,11 @@ const PublicNavbar = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-emerald-500 rounded-xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
               <img 
-                src="public/assets/logo.jpeg" 
+                src="/assets/logo.jpeg" 
                 alt="Logo" 
                 className="w-10 h-10 object-contain relative z-10"
                 onError={(e) => {
-                  e.currentTarget.src = "public/assets/logo.jpeg";
+                  e.currentTarget.src = "/assets/logo.jpeg";
                 }}
               />
             </div>
