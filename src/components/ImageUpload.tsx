@@ -38,30 +38,30 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect, currentImage, 
       <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-2">{label}</label>
       <div 
         onClick={() => fileInputRef.current?.click()}
-        className={`relative w-full aspect-video rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
-          preview ? 'border-emerald-500/50 bg-slate-900' : 'border-slate-800 bg-slate-950 hover:border-emerald-500/30'
+        className={`relative w-full aspect-video rounded-[32px] border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
+          preview ? 'border-emerald-500/50 bg-gray-50' : 'border-gray-200 bg-gray-50/50 hover:border-emerald-500/30 hover:bg-emerald-50/30'
         }`}
       >
         {preview ? (
           <>
-            <img src={preview} alt="Preview" className="w-full h-full object-cover opacity-80" />
-            <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <p className="text-white text-xs font-bold">Changer l'image</p>
+            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+              <p className="text-white text-xs font-black uppercase tracking-widest">Changer l'image</p>
             </div>
             <button 
               onClick={clearImage}
-              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors z-10"
+              className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors z-10 shadow-lg"
             >
               <X className="w-4 h-4" />
             </button>
           </>
         ) : (
-          <div className="text-center p-6">
-            <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mx-auto mb-3 text-slate-500">
-              <Upload className="w-6 h-6" />
+          <div className="text-center p-8">
+            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-emerald-600 shadow-sm border border-gray-100">
+              <Upload className="w-8 h-8" />
             </div>
-            <p className="text-sm text-slate-400 font-medium">Cliquez ou glissez une image</p>
-            <p className="text-[10px] text-slate-600 mt-1 uppercase tracking-wider">PNG, JPG jusqu'à 5MB</p>
+            <p className="text-sm text-gray-600 font-black uppercase tracking-widest">Cliquez pour ajouter</p>
+            <p className="text-[10px] text-gray-400 mt-2 uppercase tracking-[0.2em]">PNG, JPG jusqu'à 5MB</p>
           </div>
         )}
         <input 

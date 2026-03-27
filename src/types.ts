@@ -19,6 +19,7 @@ export interface DahiraEvent {
   status: string;
   image?: string;
   participantsCount: number;
+  participants?: string[]; // Array of user IDs
 }
 
 export interface Notification {

@@ -23,23 +23,30 @@ const AdminMessages = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [formData, setFormData] = useState({
-    recipient: '',
-    subject: '',
+    recipientId: '',
+    title: '',
     content: '',
     type: 'DIRECT'
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addMessage(formData);
+    addMessage({
+      ...formData,
+      recipient: formData.recipientId, // Keep both for backward compatibility
+      subject: formData.title,
+      date: new Date().toISOString(),
+      senderName: user?.name,
+      senderAvatar: user?.avatar
+    });
     setIsModalOpen(false);
-    setFormData({ recipient: '', subject: '', content: '', type: 'DIRECT' });
+    setFormData({ recipientId: '', title: '', content: '', type: 'DIRECT' });
   };
 
   const filteredMessages = messages.filter(m => 
-    m.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.sender?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (m.senderName || m.sender?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -90,17 +97,17 @@ const AdminMessages = () => {
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center space-x-3">
-                    <img src={msg.sender?.avatar} alt="" className="w-8 h-8 rounded-full border border-slate-800" />
-                    <span className="text-xs font-bold text-white">{msg.sender?.name}</span>
+                    <img src={msg.senderAvatar || msg.sender?.avatar || "https://picsum.photos/seed/avatar/100/100"} alt="" className="w-8 h-8 rounded-full border border-slate-800" />
+                    <span className="text-xs font-bold text-white">{msg.senderName || msg.sender?.name || 'Administration'}</span>
                   </div>
-                  {!msg.isRead && <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></div>}
+                  {!msg.read && <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></div>}
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1 truncate">{msg.subject}</h4>
+                <h4 className="text-sm font-bold text-white mb-1 truncate">{msg.title}</h4>
                 <p className="text-xs text-slate-500 line-clamp-2 mb-3">{msg.content}</p>
                 <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 uppercase tracking-widest">
                   <div className="flex items-center space-x-1">
                     <Clock className="w-3 h-3" />
-                    <span>{new Date(msg.createdAt).toLocaleDateString()}</span>
+                    <span>{new Date(msg.date).toLocaleDateString()}</span>
                   </div>
                   <span>{msg.type}</span>
                 </div>
@@ -119,10 +126,10 @@ const AdminMessages = () => {
             >
               <div className="p-8 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <img src={selectedMessage.sender?.avatar} alt="" className="w-12 h-12 rounded-2xl border-2 border-slate-800" />
+                  <img src={selectedMessage.senderAvatar || selectedMessage.sender?.avatar || "https://picsum.photos/seed/avatar/100/100"} alt="" className="w-12 h-12 rounded-2xl border-2 border-slate-800" />
                   <div>
-                    <h3 className="text-lg font-bold text-white">{selectedMessage.sender?.name}</h3>
-                    <p className="text-xs text-slate-500 font-medium">{selectedMessage.sender?.email}</p>
+                    <h3 className="text-lg font-bold text-white">{selectedMessage.senderName || selectedMessage.sender?.name || 'Administration'}</h3>
+                    <p className="text-xs text-slate-500 font-medium">{selectedMessage.sender?.email || 'admin@dahira.com'}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -138,9 +145,9 @@ const AdminMessages = () => {
                 <div className="mb-8">
                   <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-4">
                     <Mail className="w-3 h-3" />
-                    <span>Sujet : {selectedMessage.subject}</span>
+                    <span>Sujet : {selectedMessage.title}</span>
                   </div>
-                  <h2 className="text-2xl font-black text-white leading-tight">{selectedMessage.subject}</h2>
+                  <h2 className="text-2xl font-black text-white leading-tight">{selectedMessage.title}</h2>
                 </div>
                 <div className="prose prose-invert max-w-none">
                   <p className="text-slate-400 leading-relaxed whitespace-pre-wrap">
@@ -201,12 +208,19 @@ const AdminMessages = () => {
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-2">Destinataire</label>
                   <select 
                     required
-                    value={formData.recipient}
-                    onChange={(e) => setFormData({ ...formData, recipient: e.target.value })}
+                    value={formData.recipientId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        recipientId: val,
+                        type: val === 'ALL' ? 'ANNOUNCEMENT' : 'DIRECT'
+                      });
+                    }}
                     className="w-full px-6 py-4 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-white transition-all appearance-none"
                   >
                     <option value="">Sélectionner un membre</option>
-                    <option value="all">Tous les membres (Annonce)</option>
+                    <option value="ALL">Tous les membres (Annonce)</option>
                     {members.map(m => (
                       <option key={m.id} value={m.id}>{m.name}</option>
                     ))}
@@ -217,8 +231,8 @@ const AdminMessages = () => {
                   <input 
                     type="text" 
                     required
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Sujet du message"
                     className="w-full px-6 py-4 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none text-white transition-all"
                   />

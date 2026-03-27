@@ -22,8 +22,10 @@ import { DahiraEvent } from '../../types';
 import ImageUpload from '../../components/ImageUpload';
 
 const AdminEvents = () => {
-  const { events, addEvent, updateEvent, deleteEvent } = useData();
+  const { events, addEvent, updateEvent, deleteEvent, members } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
+  const [viewingParticipantsEvent, setViewingParticipantsEvent] = useState<DahiraEvent | null>(null);
   const [editingEvent, setEditingEvent] = useState<DahiraEvent | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -71,6 +73,11 @@ const AdminEvents = () => {
       addEvent(newEvent as Omit<DahiraEvent, 'id'>);
     }
     setIsModalOpen(false);
+  };
+
+  const handleOpenParticipantsModal = (event: DahiraEvent) => {
+    setViewingParticipantsEvent(event);
+    setIsParticipantsModalOpen(true);
   };
 
   const filteredEvents = events.filter(e => {
@@ -168,7 +175,10 @@ const AdminEvents = () => {
                     <p className="text-xl font-black text-white">{event.participantsCount}</p>
                   </div>
                 </div>
-                <button className="text-emerald-500 text-xs font-bold hover:underline flex items-center space-x-1">
+                <button 
+                  onClick={() => handleOpenParticipantsModal(event)}
+                  className="text-emerald-500 text-xs font-bold hover:underline flex items-center space-x-1"
+                >
                   <span>Voir la liste</span>
                   <ExternalLink className="w-3 h-3" />
                 </button>
@@ -346,6 +356,92 @@ const AdminEvents = () => {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Participants Modal */}
+      <AnimatePresence>
+        {isParticipantsModalOpen && viewingParticipantsEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsParticipantsModalOpen(false)}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+            >
+              <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500">
+                    <Users className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Participants</h3>
+                    <p className="text-xs text-slate-500 font-medium">{viewingParticipantsEvent.title}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsParticipantsModalOpen(false)}
+                  className="p-3 bg-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar">
+                {viewingParticipantsEvent.participants && viewingParticipantsEvent.participants.length > 0 ? (
+                  <div className="grid gap-4">
+                    {viewingParticipantsEvent.participants.map((participantId) => {
+                      const member = members.find(m => m.id === participantId);
+                      return (
+                        <div key={participantId} className="flex items-center justify-between p-4 bg-slate-950 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-all">
+                          <div className="flex items-center space-x-4">
+                            <img 
+                              src={member?.avatar || `https://ui-avatars.com/api/?name=${member?.name || 'User'}&background=random`} 
+                              alt={member?.name} 
+                              className="w-12 h-12 rounded-xl object-cover border border-slate-800"
+                            />
+                            <div>
+                              <p className="font-bold text-white">{member?.name || 'Utilisateur inconnu'}</p>
+                              <p className="text-xs text-slate-500">{member?.email || 'Pas d\'email'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                              Inscrit
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-20">
+                    <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-600">
+                      <Users className="w-10 h-10" />
+                    </div>
+                    <h4 className="text-xl font-bold text-white">Aucun participant</h4>
+                    <p className="text-slate-500 mt-2">Personne ne s'est encore inscrit à cet événement.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-8 border-t border-slate-800 bg-slate-900/50 flex justify-end">
+                <button 
+                  onClick={() => setIsParticipantsModalOpen(false)}
+                  className="px-8 py-4 bg-emerald-500 text-white rounded-2xl font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  Fermer
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

@@ -7,6 +7,8 @@ interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
   markAsRead: (id: string) => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
+  clearAll: () => Promise<void>;
   addNotification: (notif: Omit<Notification, 'id' | 'read' | 'date'>) => Promise<void>;
   refreshNotifications: () => Promise<void>;
 }
@@ -42,6 +44,25 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
+  const deleteNotification = async (id: string) => {
+    try {
+      await api.deleteNotification(id);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
+  const clearAll = async () => {
+    try {
+      // Assuming api has a clearAllNotifications or we loop
+      await Promise.all(notifications.map(n => api.deleteNotification(n.id)));
+      setNotifications([]);
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+    }
+  };
+
   const addNotification = async (notif: Omit<Notification, 'id' | 'read' | 'date'>) => {
     try {
       await api.createNotification(notif);
@@ -52,7 +73,15 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, addNotification, refreshNotifications }}>
+    <NotificationContext.Provider value={{ 
+      notifications, 
+      unreadCount, 
+      markAsRead, 
+      deleteNotification, 
+      clearAll, 
+      addNotification, 
+      refreshNotifications 
+    }}>
       {children}
     </NotificationContext.Provider>
   );

@@ -20,6 +20,9 @@ import MemberDashboard from './pages/member/Dashboard';
 import MemberEvents from './pages/member/Events';
 import MemberNotifications from './pages/member/Notifications';
 import MemberProfile from './pages/member/Profile';
+import Participation from './pages/member/Participation';
+import Messages from './pages/member/Messages';
+import Documents from './pages/member/Documents';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminMembers from './pages/admin/Members';
 import AdminEvents from './pages/admin/Events';
@@ -63,9 +66,9 @@ const AppRoutes = () => {
       }>
         <Route index element={<MemberDashboard />} />
         <Route path="events" element={<MemberEvents />} />
-        <Route path="participation" element={<div className="p-8">Ma Participation (En construction)</div>} />
-        <Route path="messages" element={<div className="p-8">Messages (En construction)</div>} />
-        <Route path="documents" element={<div className="p-8">Documents (En construction)</div>} />
+        <Route path="participation" element={<Participation />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="documents" element={<Documents />} />
         <Route path="profile" element={<MemberProfile />} />
         <Route path="notifications" element={<MemberNotifications />} />
       </Route>

@@ -40,25 +40,25 @@ const PublicNavbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="flex items-center space-x-4 group">
             <div className="relative">
-              <div className="absolute inset-0 bg-emerald-500 rounded-xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <div className="absolute inset-0 bg-emerald-500 rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
               <img 
                 src="/assets/logo.jpeg" 
                 alt="Logo" 
-                className="w-10 h-10 object-contain relative z-10"
+                className="w-12 h-12 md:w-16 md:h-16 object-contain relative z-10 transition-transform group-hover:scale-110 duration-500"
                 onError={(e) => {
-                  e.currentTarget.src = "/assets/logo.jpeg";
+                  e.currentTarget.src = "https://picsum.photos/seed/spiritual/100/100";
                 }}
               />
             </div>
             <div className="flex flex-col">
-              <span className={`text-xl font-black tracking-tighter leading-none ${
+              <span className={`text-xl md:text-2xl font-black tracking-tighter leading-none ${
                 isScrolled || !isHome ? 'text-slate-900' : 'text-white'
               }`}>
                 ANSAROUDINE
               </span>
-              <span className={`text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 ${
+              <span className={`text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] opacity-60 ${
                 isScrolled || !isHome ? 'text-emerald-600' : 'text-emerald-400'
               }`}>
                 Dahira des Élèves

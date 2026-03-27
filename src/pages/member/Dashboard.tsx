@@ -15,13 +15,17 @@ import { Link } from 'react-router-dom';
 
 const MemberDashboard = () => {
   const { user } = useAuth();
-  const { events, news } = useData();
+  const { events, news, messages, documents } = useData();
+
+  const userMessages = messages.filter(m => 
+    m.recipientId === user?.id || m.recipientId === 'ALL'
+  );
 
   const stats = [
-    { label: 'Participation', value: '85%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Événements', value: events.length.toString(), icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Documents', value: '24', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Messages', value: '5', icon: Bell, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Participation', value: '85%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: 'Événements', value: events.length.toString(), icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Documents', value: documents.length.toString(), icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
+    { label: 'Messages', value: userMessages.length.toString(), icon: Bell, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
   ];
 
   const upcomingEvents = events
@@ -59,7 +63,7 @@ const MemberDashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100"
+            className={`bg-white p-6 rounded-3xl shadow-sm border ${stat.border}`}
           >
             <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
               <stat.icon className="w-6 h-6" />

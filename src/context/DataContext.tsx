@@ -81,7 +81,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       setNews(newsData.map((n: any) => ({ ...n, id: n._id })));
       setGallery(galleryData.map((g: any) => ({ ...g, id: g._id })));
-      setMessages(messagesData.map((m: any) => ({ ...m, id: m._id })));
+      setMessages(messagesData.map((m: any) => ({ 
+        ...m, 
+        id: m._id,
+        title: m.title || m.subject || '',
+        subject: m.title || m.subject || '',
+        content: m.content || '',
+        date: m.date || m.createdAt || new Date().toISOString(),
+        createdAt: m.date || m.createdAt || new Date().toISOString(),
+        recipientId: m.recipientId || m.recipient || '',
+        recipient: m.recipientId || m.recipient || '',
+        read: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
+        isRead: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
+        type: m.type || 'DIRECT'
+      })));
       setDocuments(documentsData.map((d: any) => ({ ...d, id: d._id })));
       setNotifications(notificationsData.map((n: any) => ({ ...n, id: n._id })));
       

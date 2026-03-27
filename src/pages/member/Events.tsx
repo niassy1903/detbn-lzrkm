@@ -32,7 +32,7 @@ const MemberEvents = () => {
   };
 
   const isParticipating = (event: any) => {
-    return event.participants?.includes(user?.id);
+    return event.participants?.includes(user?.id || '');
   };
 
   return (
