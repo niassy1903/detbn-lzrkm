@@ -23,9 +23,14 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (!isAuthenticated) return;
     try {
       const data = await api.getNotifications();
-      setNotifications(data.map((n: any) => ({ ...n, id: n._id })));
+      if (Array.isArray(data)) {
+        setNotifications(data.map((n: any) => ({ ...n, id: n._id })));
+      } else {
+        setNotifications([]);
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      setNotifications([]);
     }
   };
 

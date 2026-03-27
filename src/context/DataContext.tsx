@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, DahiraEvent, Notification } from '../types';
 import { api } from '../services/api';
+import { useAuth } from './AuthContext';
 
 interface DataContextType {
   members: User[];
@@ -52,6 +53,7 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user: authUser } = useAuth();
   const [members, setMembers] = useState<User[]>([]);
   const [events, setEvents] = useState<DahiraEvent[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -61,63 +63,83 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gallery, setGallery] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     setLoading(true);
+    const token = localStorage.getItem('token');
+    
     try {
-      const [eventsData, newsData, galleryData, messagesData, documentsData, notificationsData] = await Promise.all([
-        api.getEvents(),
-        api.getNews(),
-        api.getGallery(),
-        api.getMessages(),
-        api.getDocuments(),
-        api.getNotifications()
+      // Public data
+      const [eventsData, newsData, galleryData] = await Promise.all([
+        api.getEvents().catch(() => []),
+        api.getNews().catch(() => []),
+        api.getGallery().catch(() => [])
       ]);
-      
-      setEvents(eventsData.map((e: any) => ({
+
+      setEvents(Array.isArray(eventsData) ? eventsData.map((e: any) => ({
         ...e,
         id: e._id,
         participantsCount: e.participants?.length || 0
-      })));
+      })) : []);
       
-      setNews(newsData.map((n: any) => ({ ...n, id: n._id })));
-      setGallery(galleryData.map((g: any) => ({ ...g, id: g._id })));
-      setMessages(messagesData.map((m: any) => ({ 
-        ...m, 
-        id: m._id,
-        title: m.title || m.subject || '',
-        subject: m.title || m.subject || '',
-        content: m.content || '',
-        date: m.date || m.createdAt || new Date().toISOString(),
-        createdAt: m.date || m.createdAt || new Date().toISOString(),
-        recipientId: m.recipientId || m.recipient || '',
-        recipient: m.recipientId || m.recipient || '',
-        read: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
-        isRead: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
-        type: m.type || 'DIRECT'
-      })));
-      setDocuments(documentsData.map((d: any) => ({ ...d, id: d._id })));
-      setNotifications(notificationsData.map((n: any) => ({ ...n, id: n._id })));
-      
-      // Only fetch members if admin
-      const user = JSON.parse(localStorage.getItem('dahira_user') || '{}');
-      if (user.role === 'ADMIN') {
-        const membersData = await api.getUsers();
-        setMembers(membersData.map((m: any) => ({
-          ...m,
-          id: m._id,
-          joinedAt: m.createdAt
-        })));
+      setNews(Array.isArray(newsData) ? newsData.map((n: any) => ({ ...n, id: n._id })) : []);
+      setGallery(Array.isArray(galleryData) ? galleryData.map((g: any) => ({ ...g, id: g._id })) : []);
+
+      // Authenticated data
+      if (token) {
+        try {
+          const [messagesData, documentsData, notificationsData] = await Promise.all([
+            api.getMessages().catch(() => []),
+            api.getDocuments().catch(() => []),
+            api.getNotifications().catch(() => [])
+          ]);
+
+          setMessages(Array.isArray(messagesData) ? messagesData.map((m: any) => ({ 
+            ...m, 
+            id: m._id,
+            title: m.title || m.subject || '',
+            subject: m.title || m.subject || '',
+            content: m.content || '',
+            date: m.date || m.createdAt || new Date().toISOString(),
+            createdAt: m.date || m.createdAt || new Date().toISOString(),
+            recipientId: m.recipientId || m.recipient || '',
+            recipient: m.recipientId || m.recipient || '',
+            read: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
+            isRead: m.read !== undefined ? m.read : (m.isRead !== undefined ? m.isRead : false),
+            type: m.type || 'DIRECT'
+          })) : []);
+
+          setDocuments(Array.isArray(documentsData) ? documentsData.map((d: any) => ({ ...d, id: d._id })) : []);
+          setNotifications(Array.isArray(notificationsData) ? notificationsData.map((n: any) => ({ ...n, id: n._id })) : []);
+
+          // Only fetch members if admin
+          if (authUser?.role === 'ADMIN') {
+            const membersData = await api.getUsers().catch(() => []);
+            setMembers(Array.isArray(membersData) ? membersData.map((m: any) => ({
+              ...m,
+              id: m._id,
+              joinedAt: m.createdAt
+            })) : []);
+          }
+        } catch (authError) {
+          console.error('Error fetching authenticated data:', authError);
+        }
+      } else {
+        // Clear authenticated data if no token
+        setMessages([]);
+        setDocuments([]);
+        setNotifications([]);
+        setMembers([]);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser]);
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
 
   // Members
   const addMember = async (member: any) => {
