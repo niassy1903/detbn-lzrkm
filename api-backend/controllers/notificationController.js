@@ -1,4 +1,5 @@
 import Notification from '../models/Notification.js';
+import { emitToUser, emitToAll } from '../socket.js';
 
 export const getNotifications = async (req, res) => {
   try {
@@ -24,6 +25,14 @@ export const createNotification = async (req, res) => {
       type,
       link
     });
+
+    // Real-time emission
+    if (recipient) {
+      emitToUser(recipient, 'notification', notification);
+    } else {
+      emitToAll('notification', notification);
+    }
+
     res.status(201).json(notification);
   } catch (error) {
     res.status(400).json({ message: error.message });

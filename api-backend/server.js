@@ -1,7 +1,9 @@
 import express from 'express';
+import http from 'http';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { initSocket } from './socket.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
@@ -10,12 +12,16 @@ import userRoutes from './routes/userRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
-import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.BACKEND_PORT || 5000;
+
+// Initialize Socket.io
+initSocket(server);
+
 
 // Middleware
 app.use(cors({
