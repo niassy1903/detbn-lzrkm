@@ -3,10 +3,7 @@ import User from './models/User.js';
 import Event from './models/Event.js';
 import News from './models/News.js';
 import Gallery from './models/Gallery.js';
-import dotenv from 'dotenv';
 import { getMongoUri } from './config/database.js';
-
-dotenv.config();
 
 const users = [
   {

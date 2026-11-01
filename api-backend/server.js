@@ -2,7 +2,6 @@ import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { getMongoUri } from './config/database.js';
 import { initSocket } from './socket.js';
 import authRoutes from './routes/authRoutes.js';
@@ -13,8 +12,6 @@ import userRoutes from './routes/userRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);

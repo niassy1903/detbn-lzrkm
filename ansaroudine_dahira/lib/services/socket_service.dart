@@ -21,7 +21,7 @@ class SocketService {
 
     if (token == null) return;
 
-    socket = IO.io('https://backend-bjzg.onrender.com', 
+    socket = IO.io('https://detbn-lzrkm-api.onrender.com', 
       IO.OptionBuilder()
         .setTransports(['websocket'])
         .setAuth({'token': token})

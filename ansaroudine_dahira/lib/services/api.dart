@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
-  static const String baseUrl = 'https://backend-bjzg.onrender.com/api';
+  static const String baseUrl = 'https://detbn-lzrkm-api.onrender.com/api';
 
   static Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();
