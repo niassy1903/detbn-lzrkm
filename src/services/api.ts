@@ -1,4 +1,4 @@
-const API_URL = 'https://backend-bjzg.onrender.com/api';
+const API_URL = 'https://detbn-lzrkm-api.onrender.com/api';
 
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');

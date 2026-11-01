@@ -4,10 +4,9 @@ import Event from './models/Event.js';
 import News from './models/News.js';
 import Gallery from './models/Gallery.js';
 import dotenv from 'dotenv';
+import { getMongoUri } from './config/database.js';
 
 dotenv.config();
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://niassy:niassy1903@users.vo9zxwp.mongodb.net/lzrkm_db?retryWrites=true&w=majority';
 
 const users = [
   {
@@ -70,7 +69,7 @@ const news = [
 
 const seedDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(getMongoUri());
 
     console.log('Connected to MongoDB for seeding...');
 

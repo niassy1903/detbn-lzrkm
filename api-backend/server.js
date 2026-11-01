@@ -3,6 +3,7 @@ import http from 'http';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { getMongoUri } from './config/database.js';
 import { initSocket } from './socket.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
@@ -21,7 +22,6 @@ const PORT = process.env.BACKEND_PORT || 5000;
 
 // Initialize Socket.io
 initSocket(server);
-
 
 // Middleware
 app.use(cors({
@@ -48,16 +48,15 @@ app.get('/', (req, res) => {
   res.send('DahiraConnect API is running...');
 });
 
-// MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://niassy:niassy1903@users.vo9zxwp.mongodb.net/lzrkm_db?retryWrites=true&w=majority';
-
-mongoose.connect(MONGO_URI)
-.then(() => {
+const startServer = async () => {
+  await mongoose.connect(getMongoUri());
   console.log('MongoDB Connected');
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
-})
-.catch((err) => {
-  console.error('MongoDB connection error:', err);
+};
+
+startServer().catch((error) => {
+  console.error('Failed to start API server:', error);
+  process.exitCode = 1;
 });
