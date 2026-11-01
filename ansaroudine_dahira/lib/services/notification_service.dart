@@ -5,27 +5,50 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher'); // Utilise l'icône de l'app
+    // ✅ ANDROID
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
+    // ✅ IOS (OBLIGATOIRE)
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
+    // ✅ COMBINÉ
+    const InitializationSettings settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
 
     await _notificationsPlugin.initialize(
-      initializationSettings,
+      settings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Logique quand on clique sur la notification
+        // click notification
       },
     );
 
-    // Demander la permission pour Android 13+
+    // ✅ Permissions Android 13+
     await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
+
+    // ✅ Permissions iOS
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
   Future<void> showNotification({
@@ -37,14 +60,13 @@ class NotificationService {
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'dahira_channel_id',
       'Dahira Notifications',
-      channelDescription: 'Notifications pour les messages et événements',
+      channelDescription: 'Notifications pour messages et événements',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: true,
-      icon: '@mipmap/ic_launcher',
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+    const NotificationDetails platformDetails =
+        NotificationDetails(android: androidDetails);
 
     await _notificationsPlugin.show(
       id,
