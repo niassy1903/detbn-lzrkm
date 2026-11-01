@@ -27,7 +27,8 @@ initSocket(server);
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://karangue-trafic.netlify.app' // si tu déploies
+    'https://karangue-trafic.netlify.app',
+    'https://detbn-lzrkm.vercel.app'  // si tu déploies
   ],
   credentials: true
 }));
